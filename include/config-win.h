@@ -382,8 +382,8 @@ static inline ulonglong double2ulonglong(double d)
 #define HAVE_SPATIAL 1
 #define HAVE_RTREE_KEYS 1
 
-#define HAVE_OPENSSL 1
-#define HAVE_YASSL 1
+//#define HAVE_OPENSSL 1
+//#define HAVE_YASSL 1
 
 #define COMMUNITY_SERVER 1
 #define ENABLED_PROFILING 1
