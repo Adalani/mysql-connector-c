@@ -21,8 +21,7 @@
   Minimal version of Windows we should be able to run on.
   Currently Windows 2000
 */
-#define _WIN32_WINNT     0x0500
-
+#define _WIN32_WINNT     0x0501
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 /* Avoid endless warnings about sprintf() etc. being unsafe. */
@@ -32,7 +31,7 @@
 #include <sys/locking.h>
 #include <sys/stat.h>			/* chmod() constants*/
 #include <winsock2.h>
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 #include <fcntl.h>
 #include <io.h>
 #include <malloc.h>
@@ -108,10 +107,10 @@
    Constants used by chmod. Note, that group/others is ignored
    - because unsupported by Windows due to different access control model.
 */
-#define S_IRWXU S_IREAD|S_IWRITE 
+//#define S_IRWXU S_IREAD|S_IWRITE 
 #define S_IRWXG 0
 #define S_IRWXO 0
-typedef int mode_t; 
+//typedef int mode_t; 
 
 #ifdef __BORLANDC__
 #define FILE_BINARY	O_BINARY	/* my_fopen in binary mode */
@@ -190,7 +189,7 @@ typedef SSIZE_T ssize_t;
 #define HUGE_PTR
 #define STDCALL __stdcall	    /* Used by libmysql.dll */
 #define isnan(X) _isnan(X)
-#define finite(X) _finite(X)
+//#define finite(X) _finite(X)
 
 #ifndef UNDEF_THREAD_HACK
 #define THREAD
@@ -241,16 +240,16 @@ typedef SSIZE_T ssize_t;
 #define access(A,B) _access(A,B)
 #endif
 
-#if !defined(__cplusplus)
-#define inline __inline
-#endif /* __cplusplus */
+//#if !defined(__cplusplus)
+//#define inline __inline
+//#endif /* __cplusplus */
 
 #ifdef _WIN64
 #define ulonglong2double(A) ((double) (ulonglong) (A))
 #define my_off_t2double(A)  ((double) (my_off_t) (A))
 
 #else
-inline double ulonglong2double(ulonglong value)
+static inline double ulonglong2double(ulonglong value)
 {
   longlong nr=(longlong) value;
   if (nr >= 0)
@@ -260,7 +259,7 @@ inline double ulonglong2double(ulonglong value)
 #define my_off_t2double(A) ulonglong2double(A)
 #endif /* _WIN64 */
 
-inline ulonglong double2ulonglong(double d)
+static inline ulonglong double2ulonglong(double d)
 {
   double t= d - (double) 0x8000000000000000ULL;
 

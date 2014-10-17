@@ -15,10 +15,10 @@
 
 #include "my_global.h"
 
-#if !defined(_MSC_VER) && !defined(__BORLANDC__) && !defined(__NETWARE__)
-#include "mysys_priv.h"
-#include <sys/times.h>
-#endif
+//#if !defined(_MSC_VER) && !defined(__BORLANDC__) && !defined(__NETWARE__)
+//#include "mysys_priv.h"
+//#include <sys/times.h>
+//#endif
 
 long my_clock(void)
 {

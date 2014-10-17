@@ -66,7 +66,7 @@ static unsigned int __stdcall pthread_start(void *p)
 int pthread_create(pthread_t *thread_id, pthread_attr_t *attr,
      pthread_handler func, void *param)
 {
-  uintptr_t handle;
+  uint *handle;
   struct thread_start_parameter *par;
   unsigned int  stack_size;
   DBUG_ENTER("pthread_create");

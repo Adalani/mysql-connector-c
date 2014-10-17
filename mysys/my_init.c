@@ -274,7 +274,7 @@ void my_debug_put_break_here(void)
 
 void my_parameter_handler(const wchar_t * expression, const wchar_t * function,
                           const wchar_t * file, unsigned int line,
-                          uintptr_t pReserved)
+                          uint *pReserved)
 {
   DBUG_PRINT("my",("Expression: %s  function: %s  file: %s, line: %d",
 		   expression, function, file, line));

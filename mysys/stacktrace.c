@@ -315,8 +315,8 @@ void my_write_core(int sig)
 
 #else /* __WIN__*/
 
-#include <dbghelp.h>
-#include <tlhelp32.h>
+//#include <dbghelp.h>
+//#include <tlhelp32.h>
 
 /*
   Stack tracing on Windows is implemented using Debug Helper library(dbghelp.dll)
@@ -325,6 +325,7 @@ void my_write_core(int sig)
   Hence, we have to load functions at runtime using LoadLibrary/GetProcAddress.
 */
 
+/*
 typedef DWORD (WINAPI *SymSetOptions_FctType)(DWORD dwOptions);
 typedef BOOL  (WINAPI *SymGetModuleInfo64_FctType)
   (HANDLE,DWORD64,PIMAGEHLP_MODULE64) ;
@@ -360,6 +361,7 @@ static EXCEPTION_POINTERS *exception_ptrs;
 
 #define MODULE64_SIZE_WINXP 576
 #define STACKWALK_MAX_FRAMES 64
+*/
 
 void my_init_stacktrace()
 {
@@ -370,6 +372,9 @@ void my_init_stacktrace()
 */
 BOOL init_dbghelp_functions()
 {
+  return FALSE;
+
+  /*
   static BOOL first_time= TRUE;
   static BOOL rc;
   HMODULE hDbghlp;
@@ -402,11 +407,12 @@ BOOL init_dbghelp_functions()
     && pSymGetLineFromAddr64 && pSymGetSymFromAddr64 && pStackWalk64);
   }
   return rc;
+  */
 }
 
 void my_set_exception_pointers(EXCEPTION_POINTERS *ep)
 {
-  exception_ptrs = ep;
+  //  exception_ptrs = ep;
 }
 
 
@@ -418,14 +424,11 @@ void my_set_exception_pointers(EXCEPTION_POINTERS *ep)
 */
 static void get_symbol_path(char *path, size_t size)
 { 
+  /*
   HANDLE hSnap; 
   char *envvar;
 
   path[0]= '\0';
-  /*
-    Enumerate all modules, and add their directories to the path.
-    Avoid duplicate entries.
-  */
   hSnap= CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, GetCurrentProcessId());
   if (hSnap != INVALID_HANDLE_VALUE)
   {
@@ -438,10 +441,6 @@ static void get_symbol_path(char *path, size_t size)
       char *p= strrchr(module_dir,'\\');
       if (!p)
       {
-        /*
-          Path separator was not found. Not known to happen, if ever happens,
-          will indicate current directory.
-        */
         module_dir[0]= '.';
         p= module_dir + 1;
       }
@@ -461,12 +460,12 @@ static void get_symbol_path(char *path, size_t size)
     CloseHandle(hSnap);
   }
 
-  /* Add _NT_SYMBOL_PATH, if present. */
   envvar= getenv("_NT_SYMBOL_PATH");
   if(envvar && size)
   {
     strncat(path, envvar, size-1);
   }
+  */
 }
 
 #define MAX_SYMBOL_PATH 32768
@@ -478,6 +477,7 @@ static void get_symbol_path(char *path, size_t size)
 
 void my_print_stacktrace(uchar* unused1, ulong unused2)
 {
+  /*
   HANDLE  hProcess= GetCurrentProcess();
   HANDLE  hThread= GetCurrentThread();
   static  IMAGEHLP_MODULE64 module= {sizeof(module)};
@@ -492,14 +492,11 @@ void my_print_stacktrace(uchar* unused1, ulong unused2)
   if(!exception_ptrs || !init_dbghelp_functions())
     return;
 
-  /* Copy context, as stackwalking on original will unwind the stack */
   context = *(exception_ptrs->ContextRecord);
-  /*Initialize symbols.*/
   pSymSetOptions(SYMOPT_LOAD_LINES|SYMOPT_NO_PROMPTS|SYMOPT_DEFERRED_LOADS|SYMOPT_DEBUG);
   get_symbol_path(symbol_path, sizeof(symbol_path));
   pSymInitialize(hProcess, symbol_path, TRUE);
 
-  /*Prepare stackframe for the first StackWalk64 call*/
   frame.AddrFrame.Mode= frame.AddrPC.Mode= frame.AddrStack.Mode= AddrModeFlat;
 #if (defined _M_IX86)
   machine= IMAGE_FILE_MACHINE_I386;
@@ -512,14 +509,12 @@ void my_print_stacktrace(uchar* unused1, ulong unused2)
   frame.AddrPC.Offset=    context.Rip;
   frame.AddrStack.Offset= context.Rsp;
 #else
-  /*There is currently no need to support IA64*/
 #pragma error ("unsupported architecture")
 #endif
 
   package.sym.SizeOfStruct= sizeof(package.sym);
   package.sym.MaxNameLength= sizeof(package.name);
 
-  /*Walk the stack, output useful information*/ 
   for(i= 0; i< STACKWALK_MAX_FRAMES;i++)
   {
     DWORD64 function_offset= 0;
@@ -537,11 +532,6 @@ void my_print_stacktrace(uchar* unused1, ulong unused2)
 #ifdef _M_IX86
     if(!have_module)
     {
-      /*
-        ModuleInfo structure has been "compatibly" extended in releases after XP,
-        and its size was increased. To make XP dbghelp.dll function
-        happy, pretend passing the old structure.
-      */
       module.SizeOfStruct= MODULE64_SIZE_WINXP;
       have_module= pSymGetModuleInfo64(hProcess, addr, &module);
     }
@@ -578,6 +568,7 @@ void my_print_stacktrace(uchar* unused1, ulong unused2)
     fprintf(stderr, "\n");
   }
   fflush(stderr);
+  */
 }
 
 
@@ -588,6 +579,7 @@ void my_print_stacktrace(uchar* unused1, ulong unused2)
 */
 void my_write_core(int unused)
 {
+  /*
   char path[MAX_PATH];
   char dump_fname[MAX_PATH]= "core.dmp";
   MINIDUMP_EXCEPTION_INFORMATION info;
@@ -610,7 +602,6 @@ void my_write_core(int unused)
     FILE_ATTRIBUTE_NORMAL, 0);
   if(hFile)
   {
-    /* Create minidump */
     MINIDUMP_TYPE dump_type = (MINIDUMP_TYPE)
     (MiniDumpWithDataSegs|MiniDumpWithPrivateReadWriteMemory);
 
@@ -633,11 +624,13 @@ void my_write_core(int unused)
       GetLastError());
   }
   fflush(stderr);
+  */
 }
 
 
 void my_safe_print_str(const char *name, const char *val, int len)
 {
+  /*
   fprintf(stderr,"%s at %p", name, val);
   __try 
   {
@@ -647,5 +640,6 @@ void my_safe_print_str(const char *name, const char *val, int len)
   {
     fprintf(stderr,"is an invalid string pointer\n");
   }
+  */
 }
 #endif /*__WIN__*/

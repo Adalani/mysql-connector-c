@@ -18,6 +18,8 @@
 #ifndef _global_h
 #define _global_h
 
+#include <stdio.h>
+
 /*
   InnoDB depends on some MySQL internals which other plugins should not
   need.  This is because of InnoDB's foreign key support, "safe" binlog
@@ -410,7 +412,7 @@ C_MODE_END
 #define _LONG_LONG 1		/* For AIX string library */
 #endif
 
-#ifndef stdin
+#ifndef stdin__
 #include <stdio.h>
 #endif
 #include <stdarg.h>
@@ -577,7 +579,7 @@ typedef unsigned short ushort;
 
 #if defined(__GNUC__)
 #define function_volatile	volatile
-#define my_reinterpret_cast(A) reinterpret_cast<A>
+//#define my_reinterpret_cast(A) reinterpret_cast<A>
 #define my_const_cast(A) const_cast<A>
 # ifndef GCC_VERSION
 #  define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
@@ -820,7 +822,7 @@ C_MODE_END
 #endif
 
 #if !defined(HAVE_STRTOK_R)
-inline char *strtok_r(char *str, const char *delim, char **saveptr)
+static char *strtok_r(char *str, const char *delim, char **saveptr)
 {
   return strtok(str,delim);
 }
